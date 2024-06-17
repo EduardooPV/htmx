@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMX</title>
+
+  <!-- Unica importação necessária para rodar o HTMX -->
+  <script defer src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.js"
+    integrity="sha384-qbtR4rS9RrUMECUWDWM2+YGgN3U4V4ZncZ0BvUcg9FGct0jqXz3PUdVpU1p0yrXS"
+    crossorigin="anonymous"></script>
+
+  <style>
+    /* Estilização do hx-indicator */
+    .htmx-indicator {
+      display: none;
+    }
+
+    .htmx-request .htmx-indicator {
+      display: block;
+    }
+
+    .htmx-request.htmx-indicator {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Lista de tarefas</h1>
+
+  <!-- Um get normal, adicionando o retorno na div com id `returnAllTodos` -->
+  <div>
+    <p>Pegar todas as tarefas</p>
+
+    <!-- 
+      hx-get - Realiza requisições, podendo ter todos os protocolos: GET, POST, PUT, etc.
+      hx-trigger - Qual será o acionador da requisição: CLICK, CHANGED, MOUSEENTER, etc. 
+          Ver trigger especias: https://htmx.org/docs/#special-events
+      hx-target - Especifica onde inserir o retorno da requisição (CSS Selector)
+    -->
+    <button hx-get="https://jsonplaceholder.typicode.com/todos" hx-trigger="click" hx-target="#returnAllTodos">
+      Pegar tarefas
+    </button>
+
+    <div id="returnAllTodos" style="height: 20px; overflow: hidden;"></div>
+  </div>
+
+  <!-- Get com loading durante a requisição -->
+  <div>
+    <p>Pegar todas as tarefas (com loading)</p>
+
+    <!-- 
+      hx-indicator - Diz para renderizar X div até que a requisição seja concluida
+        Aqui colocamos o `#indicator` sinalizando que o loading é o `<p>`
+      Estilizado pelo `.html-request` 
+    -->
+    <button hx-get="https://jsonplaceholder.typicode.com/todos" hx-target="#returnIndicator" hx-trigger="click"
+      hx-indicator="#indicator">
+      Pegar tarefas
+    </button>
+
+    <p id="indicator" class="htmx-indicator">Loading...</p>
+
+    <div id="returnIndicator" style="height: 20px; overflow: hidden;"></div>
+  </div>
+
+  <!-- Get especificando onde será o retorno da requisição -->
+  <div>
+    <p>Pegar todas as tarefas (CSS Selector)</p>
+
+    <!-- 
+      hx-target - Podemos especificar onde será o retorno da requisição com CSS Selector
+          Ver Target: https://htmx.org/attributes/hx-target/
+    -->
+    <button hx-get="https://jsonplaceholder.typicode.com/todos" hx-trigger="click" hx-target="next .response">
+      Pegar tarefas
+    </button>
+
+    <p class="error"></p>
+    <p class="response" style="max-height: 20px; overflow: hidden;"></p>
+  </div>
+
+  <!-- Get concatenando o retorno da requisição -->
+  <div>
+    <p>Pegar uma tarefa (Concatenar com o `beforeend`)</p>
+    <i style="display: block;">Clicar mais de uma vez</i>
+
+    <!-- 
+      hx-swap - Escolhe a forma como inserir a resposta no DOM
+          Ver Swap: https://htmx.org/attributes/hx-swap/
+
+      Experimente tirar o hx-swap e fazer varias requisições
+     -->
+    <button hx-get="https://jsonplaceholder.typicode.com/todos/1" hx-trigger="click" hx-target="#returnOneTodo"
+      hx-swap="beforeend">
+      Pegar tarefa
+    </button>
+
+    <div id="returnOneTodo"></div>
+  </div>
+
+  <!-- Get pegando e passando valores pelo params -->
+  <div>
+    <p>Pegar uma tarefa (Valor passando por Params)</p>
+
+    <!-- 
+      hx-include - Inclui manualmente qual input será enviado como params
+      hx-vals - Insere manualmente qual valor será passado como params
+    -->
+    <div>
+      <input type="number" name="todo" placeholder="Tarefa" style="display: block;">
+      <button hx-get="https://jsonplaceholder.typicode.com/todos/1" hx-include="[name='todo']"
+        hx-vals='{"myVal": "My Value"}' hx-target="next p">Buscar uma tarefa</button>
+
+      <p style="max-height: 20px; overflow: hidden;"></p>
+    </div>
+  </div>
+
+  <!-- Get com um alerta antes da requisição -->
+  <div>
+    <p>Pegar uma tarefa (Confirmação por Alert())</p>
+
+    <!-- 
+      hx-confirm - Aparece um alerta antes uma requisição
+    -->
+    <div>
+      <button hx-get="https://jsonplaceholder.typicode.com/todos/1" hx-target="next p"
+        hx-confirm="Certeza que deseja bucar uma tarefa?">Buscar uma tarefa</button>
+
+      <p style="max-height: 20px; overflow: hidden;"></p>
+    </div>
+  </div>
+</body>
+
+</html>
